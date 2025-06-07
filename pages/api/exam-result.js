@@ -72,13 +72,13 @@ export default async function handler(req, res) {
     // Helper function to parse rank (handles 'P' suffix)
     const parseRank = (rankStr) => {
       if (!rankStr) return null;
-      const numStr = rankStr.toString().replace(/[^0-9]/g, '');
+      const numStr = rankStr.toString().replace(/[^0-9]/g, "");
       return numStr ? parseInt(numStr, 10) : null;
     };
 
     const hasPSuffix = (rankStr) => {
       if (!rankStr) return false;
-      return rankStr.toString().trim().toUpperCase().endsWith('P');
+      return rankStr.toString().trim().toUpperCase().endsWith("P");
     };
 
     const rankFilter = (item) => {
@@ -86,57 +86,58 @@ export default async function handler(req, res) {
         return parseFloat(item["Cutoff Marks"]) <= parseFloat(rank);
       }
 
-      const itemRankStr = item["Closing Rank"]?.toString().trim() || '';
+      const itemRankStr = item["Closing Rank"]?.toString().trim() || "";
       const itemRank = parseRank(itemRankStr);
       const itemHasPSuffix = hasPSuffix(itemRankStr);
 
       if (exam === "JoSAA") {
         if (item["Exam"] === "JEE Advanced") {
-          if (req.query.qualifiedJeeAdv !== "Yes" || !req.query.advRank) return false;
-          
-          const userRankStr = req.query.advRank?.toString().trim() || '';
+          if (req.query.qualifiedJeeAdv !== "Yes" || !req.query.advRank)
+            return false;
+
+          const userRankStr = req.query.advRank?.toString().trim() || "";
           const userRank = parseRank(userRankStr);
           const userHasPSuffix = hasPSuffix(userRankStr);
-          
+
           // If one has 'P' suffix and the other doesn't, they don't match
           if (itemHasPSuffix !== userHasPSuffix) return false;
-          
+
           return userRank && itemRank >= 0.9 * userRank;
         } else {
           if (!req.query.mainRank) return false;
-          
-          const userRankStr = req.query.mainRank?.toString().trim() || '';
+
+          const userRankStr = req.query.mainRank?.toString().trim() || "";
           const userRank = parseRank(userRankStr);
           const userHasPSuffix = hasPSuffix(userRankStr);
-          
+
           // If one has 'P' suffix and the other doesn't, they don't match
           if (itemHasPSuffix !== userHasPSuffix) return false;
-          
+
           return userRank && itemRank >= 0.9 * userRank;
         }
       } else if (exam === "JEE Advanced") {
         if (item["Exam"] !== "JEE Advanced") return false;
         if (!req.query.advRank) return false;
-        
-        const userRankStr = req.query.advRank?.toString().trim() || '';
+
+        const userRankStr = req.query.advRank?.toString().trim() || "";
         const userRank = parseRank(userRankStr);
         const userHasPSuffix = hasPSuffix(userRankStr);
-        
+
         // If one has 'P' suffix and the other doesn't, they don't match
         if (itemHasPSuffix !== userHasPSuffix) return false;
-        
+
         return userRank && itemRank >= 0.9 * userRank;
       } else if (exam === "JEE Main") {
         if (item["Exam"] === "JEE Advanced") return false;
         if (!req.query.mainRank) return false;
-        
-        const userRankStr = req.query.mainRank?.toString().trim() || '';
+
+        const userRankStr = req.query.mainRank?.toString().trim() || "";
         const userRank = parseRank(userRankStr);
         const userHasPSuffix = hasPSuffix(userRankStr);
-        
+
         // If one has 'P' suffix and the other doesn't, they don't match
         if (itemHasPSuffix !== userHasPSuffix) return false;
-        
+
         return userRank && itemRank >= 0.9 * userRank;
       } else {
         return true;

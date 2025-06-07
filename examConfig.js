@@ -631,7 +631,7 @@ export const josaaConfig = {
   },
   getFilters: (query) => {
     const baseFilters = [
-      (item) => item.Gender === query.gender || item.Gender === 'All',
+      (item) => item.Gender === query.gender || item.Gender === "All",
       (item) => {
         if (query.program === "architecture") {
           return item["Academic Program Name"]
@@ -662,7 +662,9 @@ export const josaaConfig = {
         const closingRank = parseInt(item["Closing Rank"]);
         const mainRank = parseInt(query.mainRank);
         return (
-          !isNaN(closingRank) && !isNaN(mainRank) && closingRank >= 0.9*mainRank
+          !isNaN(closingRank) &&
+          !isNaN(mainRank) &&
+          closingRank >= 0.9 * mainRank
         );
       });
     }
@@ -671,24 +673,25 @@ export const josaaConfig = {
     if (
       query.qualifiedJeeAdv === "Yes" &&
       query.advRank &&
-      query.advRank.toString().trim() !== ''
+      query.advRank.toString().trim() !== ""
     ) {
       const advRankStr = query.advRank.toString().trim();
-      const hasPSuffix = advRankStr.endsWith('P');
-      const numericAdvRank = parseInt(advRankStr.replace(/[^0-9]/g, '')) || 0;
-      
+      const hasPSuffix = advRankStr.endsWith("P");
+      const numericAdvRank = parseInt(advRankStr.replace(/[^0-9]/g, "")) || 0;
+
       examFilters.push((item) => {
-        const closingRankStr = String(item["Closing Rank"] || '').trim();
-        const hasClosingPSuffix = closingRankStr.endsWith('P');
-        
+        const closingRankStr = String(item["Closing Rank"] || "").trim();
+        const hasClosingPSuffix = closingRankStr.endsWith("P");
+
         // If input has 'P' suffix, only match ranks that also have 'P' suffix
         // If input doesn't have 'P' suffix, only match ranks that also don't have 'P' suffix
         if (hasPSuffix !== hasClosingPSuffix) {
           return false;
         }
-        
+
         // Compare numeric values
-        const numericClosingRank = parseInt(closingRankStr.replace(/[^0-9]/g, '')) || 0;
+        const numericClosingRank =
+          parseInt(closingRankStr.replace(/[^0-9]/g, "")) || 0;
         return numericClosingRank >= 0.9 * numericAdvRank;
       });
     }
